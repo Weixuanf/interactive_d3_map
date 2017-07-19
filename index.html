@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <script src="//code.jquery.com/jquery-2.0.0.js"></script>
     <style>
     #map {
       background-color: #fff;
@@ -37,10 +36,10 @@
   </head>
   <body>
     <div id="map"></div>
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="//d3js.org/topojson.v1.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
     <script>
-    var m_width = $("#map").width(),
+    var m_width = document.getElementById("map").offsetWidth,
         width = 938,
         height = 500,
         country,
@@ -66,8 +65,8 @@
         .on("click", country_clicked);
 
     var g = svg.append("g");
-
-    d3.json("/json/countries.topo.json", function(error, us) {
+    var worldMapJsonUrl = "https://raw.githubusercontent.com/tomnoda/interactive_d3_map/master/countries.topo.json"; //http://localhost:8080/assets/json/countries.topo.json
+    d3.json(worldMapJsonUrl, function(error, us) {
       g.append("g")
         .attr("id", "countries")
         .selectAll("path")
@@ -112,7 +111,7 @@
         country = d;
 
         if (d.id  == 'USA' || d.id == 'JPN') {
-          d3.json("/json/states_" + d.id.toLowerCase() + ".topo.json", function(error, us) {
+          d3.json("https://raw.githubusercontent.com/Weixuanf/interactive_d3_map/master/states_" + d.id.toLowerCase() + ".topo.json", function(error, us) {
             g.append("g")
               .attr("id", "states")
               .selectAll("path")
@@ -126,7 +125,7 @@
 
             zoom(xyz);
             g.selectAll("#" + d.id).style('display', 'none');
-          });      
+          });
         } else {
           zoom(xyz);
         }
@@ -147,7 +146,7 @@
         country_code = state.id.substring(0, 3).toLowerCase();
         state_name = state.properties.name;
 
-        d3.json("/json/cities_" + country_code + ".topo.json", function(error, us) {
+        d3.json("https://raw.githubusercontent.com/Weixuanf/interactive_d3_map/master/cities_" + country_code + ".topo.json", function(error, us) {
           g.append("g")
             .attr("id", "cities")
             .selectAll("path")
@@ -159,15 +158,14 @@
             .attr("d", path.pointRadius(20 / xyz[2]));
 
           zoom(xyz);
-        });      
+        });
       } else {
         state = null;
         country_clicked(country);
       }
     }
-
-    $(window).resize(function() {
-      var w = $("#map").width();
+    window.addEventListener("resize", function() {
+      var w = document.getElementById("map").offsetWidth;
       svg.attr("width", w);
       svg.attr("height", w * height / width);
     });
